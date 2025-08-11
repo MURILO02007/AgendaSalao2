@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - Salão de Beleza</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        }
+        .nav-link {
+            transition: all 0.3s;
+        }
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-left: 4px solid white;
+        }
+        .card {
+            transition: all 0.3s;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.35em 0.65em;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .time-slot {
+            transition: all 0.2s;
+        }
+        .time-slot:hover {
+            transform: scale(1.05);
+        }
+        .time-slot.selected {
+            background-color: #6a11cb;
+            color: white;
+        }
+        .time-slot.unavailable {
+            background-color: #f8d7da;
+            color: #721c24;
+            cursor: not-allowed;
+        }
+        .service-item {
+            transition: all 0.3s;
+        }
+        .service-item:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 text-white fixed h-full px-4 py-8 hidden md:block">
+            <div class="flex items-center justify-center mb-10">
+                <i class="fas fa-spa text-3xl mr-3"></i>
+                <h1 class="text-2xl font-bold">Beauty Salon</h1>
+            </div>
+            
+            <ul class="space-y-2">
+                <li>
+                    <a href="#" class="nav-link active flex items-center px-4 py-3 rounded-lg" data-tab="agendamentos">
+                        <i class="fas fa-calendar-alt mr-3"></i>
+                        Agendamentos
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link flex items-center px-4 py-3 rounded-lg" data-tab="clientes">
+                        <i class="fas fa-users mr-3"></i>
+                        Clientes
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link flex items-center px-4 py-3 rounded-lg" data-tab="servicos">
+                        <i class="fas fa-concierge-bell mr-3"></i>
+                        Serviços
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link flex items-center px-4 py-3 rounded-lg" data-tab="configuracoes">
+                        <i class="fas fa-cog mr-3"></i>
+                        Configurações
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="absolute bottom-0 left-0 right-0 p-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="w-10 h-10 rounded-full mr-3">
+                        <div>
+                            <p class="font-medium">Admin</p>
+                            <p class="text-xs text-gray-300">Administrador</p>
+                        </div>
+                    </div>
+                    <a href="#" class="text-white hover:text-gray-300">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile sidebar toggle -->
+        <button id="sidebarToggle" class="md:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-full shadow-lg">
+            <i class="fas fa-bars text-purple-600"></i>
+        </button>
+
+        <!-- Main Content -->
+        <div class="flex-1 md:ml-64">
+            <!-- Header -->
+            <header class="bg-white shadow-sm py-4 px-6">
+                <div class="flex justify-between items-center">
+                    <h2 id="pageTitle" class="text-xl font-bold text-gray-800">Agendamentos</h2>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <input type="text" placeholder="Pesquisar..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                        <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
+                            <i class="fas fa-plus mr-2"></i> Novo
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <main class="p-6">
+                <!-- Agendamentos Tab -->
+                <div id="agendamentos" class="tab-content">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <div class="card bg-white p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-500">Agendamentos Hoje</p>
+                                    <h3 class="text-2xl font-bold">12</h3>
+                                </div>
+                                <div class="bg-purple-100 text-purple-600 p-3 rounded-full">
+                                    <i class="fas fa-calendar-day text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card bg-white p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-500">Agendamentos Semana</p>
+                                    <h3 class="text-2xl font-bold">48</h3>
+                                </div>
+                                <div class="bg-blue-100 text-blue-600 p-3 rounded-full">
+                                    <i class="fas fa-calendar-week text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card bg-white p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-500">Receita Mensal</p>
+                                    <h3 class="text-2xl font-bold">R$ 12.450,00</h3>
+                                </div>
+                                <div class="bg-green-100 text-green-600 p-3 rounded-full">
+                                    <i class="fas fa-dollar-sign text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-white p-6 mb-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-bold">Próximos Agendamentos</h3>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 border rounded-lg text-sm">Hoje</button>
+                                <button class="px-3 py-1 bg-purple-600 text-white rounded-lg text-sm">Semana</button>
+                                <button class="px-3 py-1 border rounded-lg text-sm">Mês</button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="text-left border-b">
+                                        <th class="pb-3">Cliente</th>
+                                        <th class="pb-3">Serviço</th>
+                                        <th class="pb-3">Data/Hora</th>
+                                        <th class="pb-3">Valor</th>
+                                        <th class="pb-3">Status</th>
+                                        <th class="pb-3">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="py-4">
+                                            <div class="flex items-center">
+                                                <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Cliente" class="w-10 h-10 rounded-full mr-3">
+                                                <div>
+                                                    <p class="font-medium">Maria Silva</p>
+                                                    <p class="text-sm text-gray-500">(71) 98765-4321</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>Corte + Escova</td>
+                                        <td>15/06/2023 - 14:00</td>
+                                        <td>R$ 120,00</td>
+                                        <td>
+                                            <span class="badge bg-green-100 text-green-800 rounded-full">Confirmado</span>
+                                        </td>
+                                        <td>
+                                            <div class="flex space-x-2">
+                                                <button class="text-purple-600 hover:text-purple-800">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-red-600 hover:text-red-800">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="py-4">
+                                            <div class="flex items-center">
+                                                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Cliente" class="w-10 h-10 rounded-full mr-3">
+                                                <div>
+                                                    <p class="font-medium">Ana Oliveira</p>
+                                                    <p class="text-sm text-gray-500">(71) 99876-5432</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>Manicure + Pedicure</td>
+                                        <td>15/06/2023 - 15:30</td>
+                                        <td>R$ 80,00</td>
+                                        <td>
+                                            <span class="badge bg-yellow-100 text-yellow-800 rounded-full">Pendente</span>
+                                        </td>
+                                        <td>
+                                            <div class="flex space-x-2">
+                                                <button class="text-purple-600 hover:text-purple-800">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-red-600 hover:text-red-800">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="py-4">
+                                            <div class="flex items-center">
+                                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Cliente" class="w-10 h-10 rounded-full mr-3">
+                                                <div>
+                                                    <p class="font-medium">Carlos Souza</p>
+                                                    <p class="text-sm text-gray-500">(71) 98765-1234</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>Barba</td>
+                                        <td>15/06/2023 - 16:00</td>
+                                        <td>R$ 50,00</td>
+                                        <td>
+                                            <span class="badge bg-green-100 text-green-800 rounded-full">Confirmado</span>
+                                        </td>
+                                        <td>
+                                            <div class="flex space-x-2">
+                                                <button class="text-purple-600 hover:text-purple-800">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-red-600 hover:text-red-800">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clientes Tab -->
+                <div id="clientes" class="tab-content hidden">
+                    <div class="card bg-white p-6 mb-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-bold">Lista de Clientes</h3>
+                            <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
+                                <i class="fas fa-plus mr-2"></i> Novo Cliente
+                            </button>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="text-left border-b">
+                                        <th class="pb-3">Cliente</th>
+                                        <th class="pb-3">Telefone</th>
+                                        <th class="pb-3">E-mail</th>
+                                        <th class="pb-3">Última Visita</th>
+                                        <th class="pb-3">Agendamentos</th>
+                                        <th class="pb-3">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="py-4">
+                                            <div class="flex items-center">
+                                                <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Cliente" class="w-10 h-10 rounded-full mr-3">
+                                                <div>
+                                                    <p class="font-medium">Maria Silva</p>
+                                                    <p class="text-sm text-gray-500">CPF: 123.456.789-00</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>(71) 98765-4321</td>
+                                        <td>maria.silva@email.com</td>
+                                        <td>10/06/2023</td>
+                                        <td>12</td>
+                                        <td>
+                                            <div class="flex space-x-2">
+                                                <button class="text-purple-600 hover:text-purple-800">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-red-600 hover:text-red-800">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="py-4">
+                                            <div class="flex items-center">
+                                                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Cliente" class="w-10 h-10 rounded-full mr-3">
+                                                <div>
+                                                    <p class="font-medium">Ana Oliveira</p>
+                                                    <p class="text-sm text-gray-500">CPF: 987.654.321-00</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>(71) 99876-5432</td>
+                                        <td>ana.oliveira@email.com</td>
+                                        <td>08/06/2023</td>
+                                        <td>8</td>
+                                        <td>
+                                            <div class="flex space-x-2">
+                                                <button class="text-purple-600 hover:text-purple-800">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-red-600 hover:text-red-800">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="py-4">
+                                            <div class="flex items-center">
+                                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Cliente" class="w-10 h-10 rounded-full mr-3">
+                                                <div>
+                                                    <p class="font-medium">Carlos Souza</p>
+                                                    <p class="text-sm text-gray-500">CPF: 456.789.123-00</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>(71) 98765-1234</td>
+                                        <td>carlos.souza@email.com</td>
+                                        <td>05/06/2023</td>
+                                        <td>5</td>
+                                        <td>
+                                            <div class="flex space-x-2">
+                                                <button class="text-purple-600 hover:text-purple-800">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-red-600 hover:text-red-800">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Serviços Tab -->
+                <div id="servicos" class="tab-content hidden">
+                    <div class="card bg-white p-6 mb-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-bold">Serviços Oferecidos</h3>
+                            <button id="addServiceBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
+                                <i class="fas fa-plus mr-2"></i> Adicionar Serviço
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="service-item border rounded-lg p-4 hover:shadow-md">
+                                <div class="flex justify-between items-start mb-3">
+                                    <h4 class="font-bold">Corte de Cabelo</h4>
+                                    <span class="text-purple-600 font-bold">R$ 60,00</span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Corte profissional com lavagem e finalização</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-500">Duração: 45 min</span>
+                                    <div class="flex space-x-2">
+                                        <button class="text-purple-600 hover:text-purple-800 text-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-800 text-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="service-item border rounded-lg p-4 hover:shadow-md">
+                                <div class="flex justify-between items-start mb-3">
+                                    <h4 class="font-bold">Manicure</h4>
+                                    <span class="text-purple-600 font-bold">R$ 40,00</span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Cuidados com as unhas das mãos</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-500">Duração: 30 min</span>
+                                    <div class="flex space-x-2">
+                                        <button class="text-purple-600 hover:text-purple-800 text-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-800 text-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="service-item border rounded-lg p-4 hover:shadow-md">
+                                <div class="flex justify-between items-start mb-3">
+                                    <h4 class="font-bold">Pedicure</h4>
+                                    <span class="text-purple-600 font-bold">R$ 45,00</span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Cuidados com as unhas dos pés</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-500">Duração: 40 min</span>
+                                    <div class="flex space-x-2">
+                                        <button class="text-purple-600 hover:text-purple-800 text-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-800 text-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="service-item border rounded-lg p-4 hover:shadow-md">
+                                <div class="flex justify-between items-start mb-3">
+                                    <h4 class="font-bold">Escova</h4>
+                                    <span class="text-purple-600 font-bold">R$ 70,00</span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Escova profissional com produtos de qualidade</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-500">Duração: 60 min</span>
+                                    <div class="flex space-x-2">
+                                        <button class="text-purple-600 hover:text-purple-800 text-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-800 text-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="service-item border rounded-lg p-4 hover:shadow-md">
+                                <div class="flex justify-between items-start mb-3">
+                                    <h4 class="font-bold">Coloração</h4>
+                                    <span class="text-purple-600 font-bold">R$ 120,00</span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Coloração profissional com produtos de qualidade</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-500">Duração: 90 min</span>
+                                    <div class="flex space-x-2">
+                                        <button class="text-purple-600 hover:text-purple-800 text-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-800 text-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="service-item border rounded-lg p-4 hover:shadow-md">
+                                <div class="flex justify-between items-start mb-3">
+                                    <h4 class="font-bold">Barba</h4>
+                                    <span class="text-purple-600 font-bold">R$ 50,00</span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Barba feita com navalha e produtos masculinos</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-500">Duração: 30 min</span>
+                                    <div class="flex space-x-2">
+                                        <button class="text-purple-600 hover:text-purple-800 text-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-800 text-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configurações Tab -->
+                <div id="configuracoes" class="tab-content hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="card bg-white p-6">
+                            <h3 class="text-lg font-bold mb-6">Horário de Funcionamento</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="segunda" class="mr-3" checked>
+                                        <label for="segunda">Segunda-feira</label>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <select class="border rounded-lg px-2 py-1">
+                                            <option>08:00</option>
+                                            <option>09:00</option>
+                                            <option>10:00</option>
+                                        </select>
+                                        <span>às</span>
+                                        <select class="border rounded-lg px-2 py-1">
+                                            <option>18:00</option>
+                                            <option>19:00</option>
+                                            <option>20:00</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="terca" class="mr-3" checked>
+                                        <label for="terca">Terça-feira</label>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <select class="border rounded-lg px-2 py-1">
+                                            <option>08:00</option>
+                                            <option>09:00</option>
+                                            <option>10:00</option>
+                                        </select>
+                                        <span>às</span>
+                                        <select class="border rounded-lg px-2 py-1">
+                                            <option>18:00</option>
+                                            <option>19:00</option>
+                                            <option>20:00</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="quarta" class="mr-3" checked>
+                                        <label for="quarta">Quarta-feira</label>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <select class="border rounded-lg px-2 py-1">
+                                            <option>08:00</option>
+                                            <option>09:00</option>
+                                            <option>10:00</option>
+                                        </select>
+                                        <span>às</span>
+                                        <select class="border rounded-lg px-2 py-1">
+                                            <option>18:00</option>
+                                            <option>19:00</option>
+                                            <option>20:00</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="quinta" class="mr-3" checked>
+                                        <label for="quinta">Quinta-feira</label>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <select class="border rounded-lg px-2 py-1">
+                                            <option>08:00</option>
+                                            <option>09:00</option>
+                                            <option>10:00</option>
+                                        </select>
+                                        <span>às</span>
+                                        <select class="border rounded-lg px-2 py-1">
+                                            <option>18:00</option>
+                                            <option>19:00</option>
+                                            <option>20:00</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="sexta" class="mr-3" checked>
+                                        <label for="sexta">Sexta-feira</label>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <select class="border rounded-lg px-2 py-1">
+                                            <option>08:00</option>
+                                            <option>09:00</option>
+                                            <option>10:00</option>
+                                        </select>
+                                        <span>às</span>
+                                        <select class="border rounded-lg px-2 py-1">
+                                            <option>18:00</option>
+                                            <option>19:00</option>
+                                            <option>20:00</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="sabado" class="mr-3">
+                                        <label for="sabado">Sábado</label>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <select class="border rounded-lg px-2 py-1" disabled>
+                                            <option>09:00</option>
+                                            <option>10:00</option>
+                                            <option>11:00</option>
+                                        </select>
+                                        <span>às</span>
+                                        <select class="border rounded-lg px-2 py-1" disabled>
+                                            <option>14:00</option>
+                                            <option>15:00</option>
+                                            <option>16:00</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="domingo" class="mr-3">
+                                        <label for="domingo">Domingo</label>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <select class="border rounded-lg px-2 py-1" disabled>
+                                            <option>09:00</option>
+                                            <option>10:00</option>
+                                            <option>11:00</option>
+                                        </select>
+                                        <span>às</span>
+                                        <select class="border rounded-lg px-2 py-1" disabled>
+                                            <option>14:00</option>
+                                            <option>15:00</option>
+                                            <option>16:00</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="mt-6 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
+                                Salvar Alterações
+                            </button>
+                        </div>
+                        
+                        <div class="card bg-white p-6">
+                            <h3 class="text-lg font-bold mb-6">Configurações do Sistema</h3>
+                            
+                            <div class="space-y-6">
+                                <div>
+                                    <label class="block text-gray-700 mb-2">Intervalo entre Agendamentos (minutos)</label>
+                                    <select class="w-full border rounded-lg px-4 py-2">
+                                        <option>15</option>
+                                        <option selected>30</option>
+                                        <option>45</option>
+                                        <option>60</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-gray-700 mb-2">Tempo de tolerância para atrasos (minutos)</label>
+                                    <select class="w-full border rounded-lg px-4 py-2">
+                                        <option>5</option>
+                                        <option selected>10</option>
+                                        <option>15</option>
+                                        <option>20</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-gray-700 mb-2">Antecedência mínima para agendamento (horas)</label>
+                                    <select class="w-full border rounded-lg px-4 py-2">
+                                        <option>1</option>
+                                        <option selected>2</option>
+                                        <option>4</option>
+                                        <option>6</option>
+                                        <option>12</option>
+                                        <option>24</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-gray-700 mb-2">Dias futuros disponíveis para agendamento</label>
+                                    <select class="w-full border rounded-lg px-4 py-2">
+                                        <option>7</option>
+                                        <option selected>15</option>
+                                        <option>30</option>
+                                        <option>60</option>
+                                        <option>90</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="notificacoes" class="mr-3" checked>
+                                    <label for="notificacoes">Enviar lembretes de agendamento</label>
+                                </div>
+                                
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="confirmacao" class="mr-3" checked>
+                                    <label for="confirmacao">Exigir confirmação do cliente</label>
+                                </div>
+                            </div>
+                            
+                            <button class="mt-6 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
+                                Salvar Configurações
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Adicionar/Editar Serviço -->
+    <div id="serviceModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg w-full max-w-md">
+            <div class="p-4 border-b">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold">Adicionar Serviço</h3>
+                    <button id="closeServiceModal" class="text-gray-500 hover:text-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-4">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 mb-2">Nome do Serviço</label>
+                        <input type="text" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 mb-2">Descrição</label>
+                        <textarea class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 mb-2">Valor (R$)</label>
+                            <input type="number" step="0.01" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 mb-2">Duração (minutos)</label>
+                            <select class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option>15</option>
+                                <option>30</option>
+                                <option>45</option>
+                                <option>60</option>
+                                <option>90</option>
+                                <option>120</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 mb-2">Categoria</label>
+                        <select class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option>Cabelo</option>
+                            <option>Unhas</option>
+                            <option>Barba</option>
+                            <option>Estética</option>
+                            <option>Maquiagem</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t flex justify-end space-x-3">
+                <button id="cancelServiceBtn" class="px-4 py-2 border rounded-lg hover:bg-gray-100">
+                    Cancelar
+                </button>
+                <button id="saveServiceBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
+                    Salvar Serviço
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle sidebar on mobile
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('hidden');
+        });
+
+        // Tab navigation
+        const tabLinks = document.querySelectorAll('.nav-link');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const pageTitle = document.getElementById('pageTitle');
+
+        tabLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all links
+                tabLinks.forEach(l => l.classList.remove('active'));
+                
+                // Add active class to clicked link
+                this.classList.add('active');
+                
+                // Hide all tab contents
+                tabContents.forEach(content => content.classList.add('hidden'));
+                
+                // Show selected tab content
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.remove('hidden');
+                
+                // Update page title
+                pageTitle.textContent = this.textContent.trim();
+            });
+        });
+
+        // Service modal
+        const serviceModal = document.getElementById('serviceModal');
+        const addServiceBtn = document.getElementById('addServiceBtn');
+        const closeServiceModal = document.getElementById('closeServiceModal');
+        const cancelServiceBtn = document.getElementById('cancelServiceBtn');
+
+        addServiceBtn.addEventListener('click', function() {
+            serviceModal.classList.remove('hidden');
+        });
+
+        closeServiceModal.addEventListener('click', function() {
+            serviceModal.classList.add('hidden');
+        });
+
+        cancelServiceBtn.addEventListener('click', function() {
+            serviceModal.classList.add('hidden');
+        });
+
+        // Close modal when clicking outside
+        serviceModal.addEventListener('click', function(e) {
+            if (e.target === serviceModal) {
+                serviceModal.classList.add('hidden');
+            }
+        });
+
+        // Enable/disable time selects based on day checkbox
+        const dayCheckboxes = document.querySelectorAll('#configuracoes input[type="checkbox"]');
+        dayCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const parentDiv = this.closest('.flex.items-center.justify-between');
+                const selects = parentDiv.querySelectorAll('select');
+                selects.forEach(select => {
+                    select.disabled = !this.checked;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

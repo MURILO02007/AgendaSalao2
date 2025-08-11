@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Como Funciona - BeautyBook</title>
+    <style>
+        :root {
+            --primary: #b023df;
+            --secondary: #6a5acd;
+            --dark: #333;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            color: var(--dark);
+            line-height: 1.6;
+            background-color: #f9f9f9;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Fixo */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #aa35ea, #700c91);
+            position: sticky;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .logoimg {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+        }
+        
+        .nav-links a:hover {
+            color: rgba(255, 255, 255, 0.8);
+            transform: translateY(-2px);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Hero Section */
+        .page-header {
+            background: linear-gradient(135deg, #aa35ea, #700c91);
+            color: white;
+            padding: 120px 0 80px;
+            text-align: center;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .page-header p {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        /* Tutorial Section */
+        .tutorial-section {
+            padding: 80px 0;
+        }
+        
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            margin: 40px auto;
+            max-width: 900px;
+            background: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #aa35ea, #700c91);
+            color: white;
+        }
+        
+        .video-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+        
+        .step-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #aa35ea, #700c91);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .step-card h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .step-card p {
+            color: var(--gray);
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #aa35ea, #700c91);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-primary {
+            background-color: white;
+            color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .btn-outline {
+            border: 2px solid white;
+            color: white;
+        }
+        
+        .btn-outline:hover {
+            background-color: white;
+            color: var(--primary);
+        }
+        
+        /* Footer */
+        footer {
+            padding: 50px 0 20px;
+            text-align: center;
+            background: white;
+            color: var(--dark);
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .footer-links a {
+            color: var(--dark);
+            text-decoration: none;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .copyright {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                padding: 15px;
+            }
+            
+            .logo-container {
+                margin-bottom: 15px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+            
+            .page-header {
+                padding: 80px 0 50px;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <nav>
+        <div class="logo-container">
+            <a href="index.html" class="logo-link">
+                <img class="logoimg" src="IMG/logoAgenTy.png" alt="BeautyBook Logo">
+                <span class="logo">BeautyBook</span>
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Início</a>
+            <a href="index.html#pricing">Planos</a>
+            <a href="index.html#contact">Contato</a>
+            <a href="signup.html">Registrar</a>
+            <a href="login.html">Login</a>
+        </div>
+    </nav>
+    
+    <section class="page-header">
+        <div class="container">
+            <h1>Como Funciona o BeautyBook</h1>
+            <p>Aprenda em poucos minutos como nosso sistema pode transformar a gestão do seu salão de beleza e aumentar seus agendamentos</p>
+        </div>
+    </section>
+    
+    <section class="tutorial-section">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 20px;">Veja o BeautyBook em Ação</h2>
+            <p style="text-align: center; max-width: 700px; margin: 0 auto 30px; color: var(--gray);">
+                Assista ao nosso vídeo tutorial para entender como configurar e utilizar todas as funcionalidades do sistema.
+            </p>
+            
+            <div class="video-container">
+                <!-- Espaço para o vídeo - substitua pelo seu embed real -->
+                <div class="video-placeholder">
+                    <i class="fas fa-play-circle"></i>
+                    <p>Vídeo Tutorial do BeautyBook</p>
+                </div>
+                <!--
+                Quando tiver o vídeo, substitua pelo código de embed:
+                <iframe src="https://www.youtube.com/embed/SEU_CODIGO" frameborder="0" allowfullscreen></iframe>
+                -->
+            </div>
+            
+            <h2 style="text-align: center; margin: 60px 0 30px;">Passo a Passo Simples</h2>
+            
+            <div class="steps-container">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Crie sua conta</h3>
+                    <p>Registre-se em menos de 2 minutos. Informe os dados básicos do seu salão e comece a configuração.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Configure seus serviços</h3>
+                    <p>Adicione todos os serviços que seu salão oferece, com preços, durações e profissionais responsáveis.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Defina sua agenda</h3>
+                    <p>Estabeleça seus horários de trabalho, dias de funcionamento e intervalos entre atendimentos.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3>Personalize seu link</h3>
+                    <p>Crie um link personalizado (ex: beautybook.com/seusalão) para seus clientes agendarem.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">5</div>
+                    <h3>Divulgue para clientes</h3>
+                    <p>Compartilhe seu link nas redes sociais, WhatsApp ou site para começar a receber agendamentos.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">6</div>
+                    <h3>Gerencie os agendamentos</h3>
+                    <p>Acompanhe todos os agendamentos pelo painel, com confirmações automáticas e lembretes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="cta-section">
+        <div class="container">
+            <h2>Pronto para Transformar seu Salão?</h2>
+            <p>Comece agora mesmo e experimente a praticidade do BeautyBook por 7 dias grátis.</p>
+            
+            <div class="cta-buttons">
+                <a href="signup.html" class="btn btn-primary">Experimente Grátis</a>
+                <a href="index.html#pricing" class="btn btn-outline">Ver Planos</a>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#">Termos de Serviço</a>
+                <a href="#">Política de Privacidade</a>
+                <a href="index.html#contact">Contato</a>
+                <a href="tutorial.html">Como Funciona</a>
+            </div>
+            <p class="copyright">© 2023 BeautyBook. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>

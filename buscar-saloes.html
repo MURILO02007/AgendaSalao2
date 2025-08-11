@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Salões - BeautyBook</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #b023df;
+            --secondary: #6a5acd;
+            --dark: #333;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --salon-card: #fff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            color: var(--dark);
+            line-height: 1.6;
+            background-color: #f5f5f5;
+            padding-top: 80px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Fixo */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #aa35ea, #700c91);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .logoimg {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 12px;
+        }
+        
+        /* Estilos específicos da página de busca */
+        .search-hero {
+            background: linear-gradient(135deg, #aa35ea, #700c91);
+            color: white;
+            padding: 60px 0 40px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .search-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .search-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .search-box {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .search-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .search-header h2 {
+            color: var(--primary);
+        }
+        
+        .search-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .city-selector {
+            padding: 12px 20px;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            font-size: 1rem;
+            width: 100%;
+        }
+        
+        .search-input {
+            padding: 12px 20px;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(176, 35, 223, 0.2);
+        }
+        
+        .search-btn {
+            padding: 12px 30px;
+            border-radius: 30px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .search-btn:hover {
+            background-color: #9a1fc7;
+        }
+        
+        .filter-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .filter-btn {
+            padding: 8px 15px;
+            border-radius: 30px;
+            background: #f0f0f0;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .results-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        .salon-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .salon-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .salon-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .salon-info {
+            padding: 20px;
+        }
+        
+        .salon-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .salon-name {
+            font-size: 1.3rem;
+            color: var(--dark);
+        }
+        
+        .salon-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #ffc107;
+            font-weight: bold;
+        }
+        
+        .salon-location {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray);
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .salon-services {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 15px 0;
+        }
+        
+        .service-tag {
+            background: #f8f0ff;
+            color: var(--primary);
+            padding: 5px 10px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+        }
+        
+        .salon-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .salon-price {
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .book-btn {
+            padding: 8px 20px;
+            border-radius: 30px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .book-btn:hover {
+            background: #9a1fc7;
+        }
+        
+        footer {
+            background: linear-gradient(135deg, #aa35ea, #700c91);
+            color: white;
+            padding: 40px 0 20px;
+            text-align: center;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        .copyright {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* Loader */
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loader-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Estilo para o dropdown de cidades */
+        .city-selector {
+            padding: 12px 20px;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            font-size: 1rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 15px;
+            cursor: pointer;
+        }
+
+        /* Mensagem quando não há salões */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo-container">
+            <a href="index.html" class="logo-link">
+                <img class="logoimg" src="IMG/logoAgenTy.png" alt="BeautyBook Logo">
+                <div class="logo">BeautyBook</div>
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html#features">Recursos</a>
+            <a href="index.html#pricing">Planos</a>
+            <a href="index.html#contact">Contato</a>
+            <a href="registrar.html">Registrar Salão</a>
+            <a href="login.html">Login</a>
+        </div>
+    </nav>
+    
+    <section class="search-hero">
+        <div class="container">
+            <h1>Encontre o salão perfeito para você</h1>
+            <p>Agende serviços de beleza com os melhores profissionais da sua região</p>
+        </div>
+    </section>
+    
+    <div class="container">
+        <div class="search-container">
+            <div class="search-box">
+                <div class="search-header">
+                    <h2>Onde você está?</h2>
+                </div>
+                
+                <form id="searchForm" class="search-form">
+                    <select class="city-selector" id="cityInput">
+                        <option value="">Todas as cidades</option>
+                        <option value="sao-paulo">São Paulo - SP</option>
+                        <option value="rio-de-janeiro">Rio de Janeiro - RJ</option>
+                        <option value="belo-horizonte">Belo Horizonte - MG</option>
+                        <option value="porto-alegre">Porto Alegre - RS</option>
+                        <option value="curitiba">Curitiba - PR</option>
+                        <option value="salvador">Salvador - BA</option>
+                        <option value="fortaleza">Fortaleza - CE</option>
+                        <option value="recife">Recife - PE</option>
+                        <option value="brasilia">Brasília - DF</option>
+                    </select>
+                    <input type="text" id="salonNameInput" class="search-input" placeholder="Buscar por nome do salão">
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </form>
+                
+                <div class="filter-section">
+                    <button class="filter-btn active">Todos</button>
+                    <button class="filter-btn" data-filter="rating">Melhor avaliados</button>
+                    <button class="filter-btn" data-filter="price">Preço mais baixo</button>
+                    <button class="filter-btn" data-filter="promo">Com promoções</button>
+                </div>
+            </div>
+        </div>
+        
+        <h2 style="margin-bottom: 20px;">Salões encontrados</h2>
+        
+        <div class="loader">
+            <div class="loader-spinner"></div>
+            <p>Buscando salões...</p>
+        </div>
+        
+        <div class="results-container" id="salonResults">
+            <!-- Os resultados serão inseridos aqui via JavaScript -->
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#">Termos de Serviço</a>
+                <a href="#">Política de Privacidade</a>
+                <a href="index.html#contact">Contato</a>
+            </div>
+            <p class="copyright">© 2023 BeautyBook. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos do DOM
+            const searchForm = document.getElementById('searchForm');
+            const salonResults = document.getElementById('salonResults');
+            const cityInput = document.getElementById('cityInput');
+            const salonNameInput = document.getElementById('salonNameInput');
+            const loader = document.querySelector('.loader');
+            
+            // Dados mockados de salões por cidade
+            const mockSalons = {
+                'sao-paulo': [
+                    {
+                        id: 1,
+                        name: 'Salão da Maria',
+                        rating: 4.8,
+                        reviews: 120,
+                        address: 'Rua das Flores, 123 - Centro',
+                        services: ['Corte de cabelo', 'Coloração', 'Manicure'],
+                        priceRange: 'R$ 50 - R$ 150',
+                        image: 'https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1',
+                        promo: true
+                    },
+                    {
+                        id: 2,
+                        name: 'Beleza Natural',
+                        rating: 4.9,
+                        reviews: 85,
+                        address: 'Avenida Principal, 456 - Jardins',
+                        services: ['Maquiagem', 'Depilação', 'Massagem'],
+                        priceRange: 'R$ 80 - R$ 200',
+                        image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e',
+                        promo: false
+                    },
+                    {
+                        id: 5,
+                        name: 'Estilo & Cia',
+                        rating: 4.7,
+                        reviews: 95,
+                        address: 'Rua Augusta, 789 - Consolação',
+                        services: ['Corte', 'Progressiva', 'Hidratação'],
+                        priceRange: 'R$ 70 - R$ 180',
+                        image: 'https://images.unsplash.com/photo-1519699047748-de8e457a634e',
+                        promo: true
+                    }
+                ],
+                'rio-de-janeiro': [
+                    {
+                        id: 3,
+                        name: 'Cabelo & Cia',
+                        rating: 4.7,
+                        reviews: 95,
+                        address: 'Rua Copacabana, 789 - Copacabana',
+                        services: ['Corte', 'Progressiva', 'Hidratação'],
+                        priceRange: 'R$ 70 - R$ 180',
+                        image: 'https://images.unsplash.com/photo-1519699047748-de8e457a634e',
+                        promo: true
+                    },
+                    {
+                        id: 6,
+                        name: 'Belle Rio',
+                        rating: 4.5,
+                        reviews: 75,
+                        address: 'Avenida Atlântica, 101 - Copacabana',
+                        services: ['Maquiagem', 'Depilação', 'Massagem'],
+                        priceRange: 'R$ 90 - R$ 220',
+                        image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e',
+                        promo: false
+                    }
+                ],
+                'belo-horizonte': [
+                    {
+                        id: 4,
+                        name: 'Estilo BH',
+                        rating: 4.6,
+                        reviews: 64,
+                        address: 'Avenida Contorno, 101 - Savassi',
+                        services: ['Corte masculino', 'Barba', 'Pigmentação'],
+                        priceRange: 'R$ 40 - R$ 120',
+                        image: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70',
+                        promo: false
+                    },
+                    {
+                        id: 7,
+                        name: 'Salão Mineiro',
+                        rating: 4.4,
+                        reviews: 52,
+                        address: 'Rua da Bahia, 456 - Centro',
+                        services: ['Corte', 'Escova', 'Manicure'],
+                        priceRange: 'R$ 45 - R$ 110',
+                        image: 'https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1',
+                        promo: true
+                    }
+                ]
+            };
+
+            // Função para buscar salões
+            function searchSalons() {
+                const selectedCity = cityInput.value;
+                const salonName = salonNameInput.value.toLowerCase();
+                
+                loader.style.display = 'block';
+                salonResults.innerHTML = '';
+                
+                // Simula uma requisição assíncrona
+                setTimeout(() => {
+                    let salons = [];
+                    
+                    // Se nenhuma cidade foi selecionada, busca em todas as cidades
+                    if (!selectedCity) {
+                        for (const city in mockSalons) {
+                            salons = salons.concat(mockSalons[city]);
+                        }
+                    } else {
+                        salons = mockSalons[selectedCity] || [];
+                    }
+                    
+                    // Filtrar por nome do salão se houver busca
+                    if (salonName) {
+                        salons = salons.filter(salon => 
+                            salon.name.toLowerCase().includes(salonName)
+                        );
+                    }
+                    
+                    if (salons.length === 0) {
+                        salonResults.innerHTML = `
+                            <div class="no-results">
+                                <h3>Nenhum salão encontrado</h3>
+                                <p>Tente ajustar seus critérios de busca</p>
+                            </div>
+                        `;
+                    } else {
+                        // Ordena por filtro selecionado
+                        const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter;
+                        let sortedSalons = [...salons];
+                        
+                        if (activeFilter === 'rating') {
+                            sortedSalons.sort((a, b) => b.rating - a.rating);
+                        } else if (activeFilter === 'price') {
+                            sortedSalons.sort((a, b) => {
+                                const aPrice = parseInt(a.priceRange.split(' - ')[0].replace('R$ ', ''));
+                                const bPrice = parseInt(b.priceRange.split(' - ')[0].replace('R$ ', ''));
+                                return aPrice - bPrice;
+                            });
+                        } else if (activeFilter === 'promo') {
+                            sortedSalons = sortedSalons.filter(salon => salon.promo);
+                        }
+                        
+                        // Exibe os resultados
+                        sortedSalons.forEach(salon => {
+                            const salonCard = document.createElement('div');
+                            salonCard.className = 'salon-card';
+                            salonCard.innerHTML = `
+                                <div class="salon-image" style="background-image: url('${salon.image}')"></div>
+                                <div class="salon-info">
+                                    <div class="salon-header">
+                                        <h3 class="salon-name">${salon.name}</h3>
+                                        <div class="salon-rating">
+                                            <i class="fas fa-star"></i>
+                                            <span>${salon.rating}</span>
+                                            <span>(${salon.reviews})</span>
+                                        </div>
+                                    </div>
+                                    <div class="salon-location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>${salon.address}</span>
+                                    </div>
+                                    <div class="salon-services">
+                                        ${salon.services.map(service => `
+                                            <span class="service-tag">${service}</span>
+                                        `).join('')}
+                                    </div>
+                                    <div class="salon-footer">
+                                        <span class="salon-price">${salon.priceRange}</span>
+                                        <a href="agendamento.html?salon=${salon.id}" class="book-btn">
+                                            ${salon.promo ? '<i class="fas fa-bolt"></i> ' : ''}Agendar
+                                        </a>
+                                    </div>
+                                </div>
+                            `;
+                            salonResults.appendChild(salonCard);
+                        });
+                    }
+                    
+                    loader.style.display = 'none';
+                }, 800);
+            }
+            
+            // Event listeners
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                searchSalons();
+            });
+            
+            // Busca automática ao digitar no campo de nome
+            salonNameInput.addEventListener('input', function() {
+                // Adiciona um pequeno delay para evitar buscas a cada tecla pressionada
+                clearTimeout(this.timer);
+                this.timer = setTimeout(() => {
+                    searchSalons();
+                }, 500);
+            });
+            
+            // Filtros
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    searchSalons();
+                });
+            });
+            
+            // Busca inicial
+            searchSalons();
+        });
+    </script>
+</body>
+</html>

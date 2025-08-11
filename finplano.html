@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar Assinatura - BeautyBook</title>
+    <style>
+        :root {
+            --primary: #b023df;
+            --secondary: #6a5acd;
+            --dark: #333;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            color: var(--dark);
+            line-height: 1.6;
+            background: linear-gradient(135deg, #aa35ea, #700c91);
+            min-height: 100vh;
+            padding: 80px 0 40px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Fixo */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #aa35ea, #700c91);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .logoimg {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Conteúdo principal */
+        .checkout-container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .checkout-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .checkout-header h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .checkout-header p {
+            color: var(--gray);
+        }
+        
+        /* Seção de plano */
+        .plan-section {
+            background: rgba(176, 35, 223, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .plan-title {
+            font-size: 1.3rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .plan-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .plan-price span {
+            font-size: 1rem;
+            color: var(--gray);
+        }
+        
+        .plan-features {
+            margin-bottom: 20px;
+        }
+        
+        .plan-features li {
+            margin-bottom: 8px;
+            list-style-type: none;
+            position: relative;
+            padding-left: 25px;
+        }
+        
+        .plan-features li:before {
+            content: "✓";
+            color: #4CAF50;
+            position: absolute;
+            left: 0;
+        }
+        
+        .plan-select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: white;
+            color: var(--dark);
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        
+        /* Formulário */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            width: 100%;
+        }
+        
+        .btn-primary:hover {
+            background-color: #9a1ecf;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(154, 30, 207, 0.3);
+        }
+        
+        /* Upload de imagem */
+        .image-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .image-upload-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .upload-btn {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        
+        .upload-btn input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .upload-label {
+            display: block;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: white;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .copyright {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .payment-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        /* Estilos para a checkbox de confirmação */
+        .terms-confirmation {
+            margin: 30px 0 20px;
+            padding: 15px;
+            background-color: rgba(176, 35, 223, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .terms-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .terms-checkbox input[type="checkbox"] {
+            accent-color: var(--primary);
+            min-width: 18px;
+            min-height: 18px;
+            cursor: pointer;
+            margin-top: 3px;
+        }
+
+        .terms-checkbox label {
+            cursor: pointer;
+            user-select: none;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .terms-checkbox a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .terms-checkbox a:hover {
+            text-decoration: underline;
+        }
+
+        .terms-checkbox strong {
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .plan-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo-container">
+            <a href="index.html" class="logo-link">
+                <img class="logoimg" src="IMG/logoAgenTy.png" alt="BeautyBook Logo">
+                <div class="logo">BeautyBook</div>
+            </a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="checkout-container">
+            <div class="checkout-header">
+                <h1>Finalizar Assinatura</h1>
+                <p>Preencha seus dados para concluir a assinatura</p>
+            </div>
+            
+            <div class="plan-section">
+                <div class="plan-header">
+                    <div class="plan-title" id="planTitle">Plano Premium</div>
+                    <div class="plan-price" id="planPrice">R$85,00 <span>/mês</span></div>
+                </div>
+                
+                <ul class="plan-features" id="planFeatures">
+                    <li>Até 5 profissionais</li>
+                    <li>Todos os recursos básicos</li>
+                    <li>Relatórios avançados</li>
+                    <li>Lembretes por WhatsApp e SMS</li>
+                    <li>Integração com redes sociais</li>
+                    <li>Suporte prioritário</li>
+                </ul>
+                
+                <select class="plan-select" id="planSelect">
+                    <option value="basico">Plano Básico - R$85,00/mês</option>
+                    <option value="premium">Plano Profissional - R$135,00/mês</option>
+                </select>
+            </div>
+            
+            <form id="signupForm">
+                <!-- Seção de upload de imagem -->
+                <div class="image-upload">
+                    <label class="upload-label">Imagem do Salão (aparecerá nas buscas)</label>
+                    <img id="imagePreview" class="image-upload-preview" alt="Pré-visualização da imagem">
+                    <div class="upload-btn btn btn-primary">
+                        Escolher Imagem
+                        <input type="file" id="salonImage" accept="image/*" required>
+                    </div>
+                    <small style="color: var(--gray);">Recomendado: 500x500px, formato quadrado</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="businessName">Nome do Negócio</label>
+                    <input type="text" id="businessName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="businessDescription">Descrição do Salão</label>
+                    <textarea id="businessDescription" rows="3" placeholder="Descreva brevemente seu salão, serviços oferecidos, especialidades, etc." required></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fullName">Seu Nome Completo</label>
+                        <input type="text" id="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Telefone</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" required>
+                </div>
+                
+                <h3 style="margin: 20px 0 15px; color: var(--primary);">Localização do Salão</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="state">Estado</label>
+                        <select id="state" required>
+                            <option value="">Selecione...</option>
+                            <option value="AC">Acre</option>
+                            <option value="AL">Alagoas</option>
+                            <option value="AP">Amapá</option>
+                            <option value="AM">Amazonas</option>
+                            <option value="BA">Bahia</option>
+                            <option value="CE">Ceará</option>
+                            <option value="DF">Distrito Federal</option>
+                            <option value="ES">Espírito Santo</option>
+                            <option value="GO">Goiás</option>
+                            <option value="MA">Maranhão</option>
+                            <option value="MT">Mato Grosso</option>
+                            <option value="MS">Mato Grosso do Sul</option>
+                            <option value="MG">Minas Gerais</option>
+                            <option value="PA">Pará</option>
+                            <option value="PB">Paraíba</option>
+                            <option value="PR">Paraná</option>
+                            <option value="PE">Pernambuco</option>
+                            <option value="PI">Piauí</option>
+                            <option value="RJ">Rio de Janeiro</option>
+                            <option value="RN">Rio Grande do Norte</option>
+                            <option value="RS">Rio Grande do Sul</option>
+                            <option value="RO">Rondônia</option>
+                            <option value="RR">Roraima</option>
+                            <option value="SC">Santa Catarina</option>
+                            <option value="SP">São Paulo</option>
+                            <option value="SE">Sergipe</option>
+                            <option value="TO">Tocantins</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">Cidade</label>
+                        <input type="text" id="city" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="neighborhood">Bairro</label>
+                        <input type="text" id="neighborhood" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="street">Rua</label>
+                        <input type="text" id="street" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="number">Número</label>
+                        <input type="text" id="number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="complement">Complemento</label>
+                        <input type="text" id="complement">
+                    </div>
+                </div>
+                
+                <div class="payment-info">
+                    <p><strong>Informações sobre pagamento:</strong> Os pagamentos são recorrentes e realizados automaticamente a cada 30 dias. Caso o pagamento não seja processado por falta de saldo, você terá um período de 7 dias para regularizar a situação. Após esse período, caso o pagamento não seja efetuado, seu acesso ao sistema será cancelado automaticamente.</p>
+                </div>
+                
+                <!-- Checkbox de confirmação do plano -->
+                <div class="terms-confirmation">
+                    <div class="terms-checkbox">
+                        <input type="checkbox" id="termsCheck" required>
+                        <label for="termsCheck">
+                            Eu concordo com os <a href="#">Termos de Serviço</a> e <a href="#">Política de Privacidade</a> 
+                            do BeautyBook, e confirmo que desejo assinar o <strong id="selectedPlanName">Plano Profissional</strong> 
+                            por <strong id="selectedPlanPrice">R$135,00/mês</strong>.
+                        </label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Finalizar Assinatura</button>
+            </form>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="footer-links">
+            <a href="#">Termos de Serviço</a>
+            <a href="#">Política de Privacidade</a>
+            <a href="#">Contato</a>
+        </div>
+        <p class="copyright">© 2023 BeautyBook. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/dist/umd/supabase.min.js"></script>
+  
+   <script>
+    const supabase = window.supabase.createClient(
+        'https://vcgmnancosgbpmfvkkjc.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjZ21uYW5jb3NnYnBtZnZra2pjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNTAyNjUsImV4cCI6MjA2OTkyNjI2NX0.PoTIyfubFocRtEuLgPGV1MaXT8zW6wRUAJZf7qpYmnA'
+    );
+
+    const urlParams = new URLSearchParams(window.location.search);
+    let planoSelecionado = urlParams.get('plano') || 'basico';
+    const valorParam = urlParams.get('valor');
+
+    const planos = {
+        basico: {
+            titulo: "Plano Básico",
+            preco: 85,
+            recursos: [
+                "Até 2 profissionais",
+                "Agendamento online",
+                "Gestão básica de clientes",
+                "Lembretes por WhatsApp",
+                "Suporte por e-mail"
+            ],
+            stripe_price_id: "price_1RtqSFP8lv9nWCrpZqB3qCMd"
+        },
+        premium: {
+            titulo: "Plano Profissional",
+            preco: 135,
+            recursos: [
+                "Profissionais ilimitados",
+                "Todos os recursos básicos",
+                "Relatórios avançados",
+                "Lembretes por WhatsApp e SMS",
+                "Integração com redes sociais",
+                "Suporte 24/7"
+            ],
+            stripe_price_id: "price_1RtqUXP8lv9nWCrpqeqbHEkr"
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const planTitle = document.getElementById('planTitle');
+        const planPrice = document.getElementById('planPrice');
+        const planFeatures = document.getElementById('planFeatures');
+        const planSelect = document.getElementById('planSelect');
+        const signupForm = document.getElementById('signupForm');
+        const imagePreview = document.getElementById('imagePreview');
+        const salonImageInput = document.getElementById('salonImage');
+        const phoneInput = document.getElementById('phone');
+        const selectedPlanName = document.getElementById('selectedPlanName');
+        const selectedPlanPrice = document.getElementById('selectedPlanPrice');
+
+        if (!planos[planoSelecionado]) planoSelecionado = 'basico';
+        if (valorParam && !isNaN(valorParam)) {
+            planos[planoSelecionado].preco = parseInt(valorParam);
+        }
+
+        function atualizarPlano() {
+            const plano = planos[planoSelecionado];
+            planTitle.textContent = plano.titulo;
+            planPrice.innerHTML = `R$${plano.preco.toLocaleString('pt-BR')},00 <span>/mês</span>`;
+            planFeatures.innerHTML = '';
+            plano.recursos.forEach(r => {
+                const li = document.createElement('li');
+                li.textContent = r;
+                planFeatures.appendChild(li);
+            });
+            selectedPlanName.textContent = plano.titulo;
+            selectedPlanPrice.textContent = `R$${plano.preco.toLocaleString('pt-BR')},00/mês`;
+            planSelect.value = planoSelecionado;
+        }
+
+        phoneInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.substring(0, 11);
+            if (value.length > 0) {
+                value = value.replace(/^(\d{0,2})(\d{0,5})(\d{0,4})/, '($1) $2-$3');
+            }
+            e.target.value = value;
+        });
+
+        salonImageInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    imagePreview.src = event.target.result;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        planSelect.addEventListener('change', function () {
+            planoSelecionado = this.value;
+            atualizarPlano();
+        });
+
+        signupForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            if (!signupForm.checkValidity()) {
+                alert("Preencha todos os campos obrigatórios.");
+                return;
+            }
+            if (!document.getElementById('termsCheck').checked) {
+                alert("Confirme que concorda com os termos.");
+                return;
+            }
+
+            let imageUrl = null;
+            const file = salonImageInput.files[0];
+            if (file) {
+                try {
+                    const fileExt = file.name.split('.').pop();
+                    const filePath = `saloes/${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+                    const { error: uploadError } = await supabase
+                        .storage
+                        .from('saloes-images')
+                        .upload(filePath, file);
+                    if (uploadError) throw uploadError;
+                    imageUrl = `https://vcgmnancosgbpmfvkkjc.supabase.co/storage/v1/object/public/saloes-images/${filePath}`;
+                } catch (error) {
+                    alert("Erro ao fazer upload da imagem.");
+                    return;
+                }
+            }
+
+            const formData = {
+                plano: planoSelecionado,
+                valor: planos[planoSelecionado].preco,
+                business_name: document.getElementById('businessName').value.trim(),
+                business_description: document.getElementById('businessDescription').value.trim(),
+                full_name: document.getElementById('fullName').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                password: document.getElementById('password').value,
+                salon_image: imageUrl,
+                state: document.getElementById('state').value,
+                city: document.getElementById('city').value.trim(),
+                neighborhood: document.getElementById('neighborhood').value.trim(),
+                street: document.getElementById('street').value.trim(),
+                number: document.getElementById('number').value.trim(),
+                complement: document.getElementById('complement').value.trim(),
+                created_at: new Date().toISOString()
+            };
+
+            try {
+                // Salva no Supabase
+                const { error } = await supabase.from('saloes').insert([formData]);
+                if (error) throw error;
+
+                // Chama o backend para criar a sessão no Stripe
+                const response = await fetch('http://localhost:4242/create-checkout-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        priceId: planos[planoSelecionado].stripe_price_id
+                    })
+                });
+
+                const session = await response.json();
+                if (session.url) {
+                    window.location.href = session.url; // Redireciona para o Stripe
+                } else {
+                    throw new Error("Erro ao criar sessão de pagamento");
+                }
+
+            } catch (error) {
+                alert("Erro ao finalizar assinatura.");
+                console.error(error);
+            }
+        });
+
+        atualizarPlano();
+    });
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeautyBook - Demonstração de Agendamento</title>
+    <style>
+        :root {
+            --primary: #b023df;
+            --secondary: #6a5acd;
+            --dark: #333;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            color: var(--dark);
+            line-height: 1.6;
+            background: #700c91;
+            padding-top: 80px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header Fixo */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 0;
+            align-items: center;
+            background: #700c91;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            margin-left: 20px;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-right: 20px;
+        }
+        
+        .view-btn, .back-btn {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border: 1px solid white;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .view-btn.active {
+            background-color: white;
+            color: var(--primary);
+        }
+        
+        .view-btn:hover, .back-btn:hover {
+            background-color: white;
+            color: var(--primary);
+        }
+        
+        /* Formulário de Agendamento */
+        .booking-form, .salon-view, .config-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-top: 40px;
+        }
+        
+        .booking-form h2, .salon-view h2, .config-panel h2 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .submit-btn, .save-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover, .save-btn:hover {
+            background-color: #9a1fc9;
+            transform: translateY(-2px);
+        }
+        
+        /* Confirmação */
+        .confirmation {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            margin-top: 40px;
+        }
+        
+        .confirmation h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .confirmation p {
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .confirmation-icon {
+            font-size: 4rem;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        
+        /* Visão do Salão */
+        .salon-view {
+            display: none;
+        }
+        
+        .salon-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .salon-name {
+            font-size: 1.5rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .config-btn {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .config-btn:hover {
+            background-color: #5a4acd;
+        }
+        
+        .calendar {
+            margin-top: 20px;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .calendar-nav-btn {
+            background-color: var(--light);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+        
+        .calendar-day-header {
+            text-align: center;
+            font-weight: bold;
+            padding: 10px;
+            background-color: var(--light);
+            border-radius: 4px;
+        }
+        
+        .calendar-day {
+            min-height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+        }
+        
+        .calendar-day.disabled {
+            background-color: #f5f5f5;
+            color: var(--gray);
+        }
+        
+        .calendar-day-number {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .appointment {
+            background-color: #e6f7ff;
+            border-left: 3px solid var(--primary);
+            padding: 5px;
+            margin-bottom: 5px;
+            border-radius: 3px;
+            font-size: 0.9rem;
+        }
+        
+        /* Painel de Configuração */
+        .config-panel {
+            display: none;
+        }
+        
+        .config-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .config-section h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .service-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
+        .service-item input {
+            flex: 1;
+        }
+        
+        .add-service {
+            background-color: var(--light);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .day-checkbox {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .day-checkbox input {
+            margin-right: 10px;
+        }
+        
+        .special-date {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">BeautyBook</div>
+        <div class="nav-buttons">
+            <div id="clientViewBtn" class="view-btn active">Visão do Cliente</div>
+            <div id="salonViewBtn" class="view-btn">Visão do Salão</div>
+            <a href="index.html" class="back-btn">Voltar para Início</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <!-- Visão do Cliente -->
+        <div id="clientView">
+            <form id="bookingForm" class="booking-form">
+                <h2 id="salonNameDisplay">Salão de Beleza</h2>
+                
+                <div class="form-group">
+                    <label for="service">Serviço</label>
+                    <select id="service" required>
+                        <option value="" disabled selected>Selecione um serviço</option>
+                        <!-- Os serviços serão preenchidos dinamicamente -->
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="date">Data</label>
+                        <input type="date" id="date" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="time">Horário</label>
+                        <select id="time" required>
+                            <option value="" disabled selected>Selecione um horário</option>
+                            <!-- Os horários serão preenchidos dinamicamente -->
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="name">Nome Completo</label>
+                    <input type="text" id="name" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Telefone</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn">Confirmar Agendamento</button>
+            </form>
+            
+            <div id="confirmation" class="confirmation">
+                <div class="confirmation-icon">✓</div>
+                <h2>Agendamento Confirmado!</h2>
+                <p id="confirmationText"></p>
+                <a href="index.html" class="back-btn">Voltar para Início</a>
+            </div>
+        </div>
+        
+        <!-- Visão do Salão -->
+        <div id="salonView" class="salon-view">
+            <div class="salon-header">
+                <div class="salon-name" id="salonName">Meu Salão</div>
+                <button id="configBtn" class="config-btn">Configurações</button>
+            </div>
+            
+            <div class="calendar">
+                <div class="calendar-header">
+                    <h3 id="currentMonth">Junho 2023</h3>
+                    <div class="calendar-nav">
+                        <button id="prevMonth" class="calendar-nav-btn">◀</button>
+                        <button id="nextMonth" class="calendar-nav-btn">▶</button>
+                    </div>
+                </div>
+                
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- O calendário será gerado dinamicamente -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Painel de Configuração -->
+        <div id="configPanel" class="config-panel">
+            <h2>Configurações do Salão</h2>
+            
+            <div class="config-section">
+                <h3>Informações Básicas</h3>
+                <div class="form-group">
+                    <label for="salonNameInput">Nome do Salão</label>
+                    <input type="text" id="salonNameInput" placeholder="Digite o nome do seu salão">
+                </div>
+            </div>
+            
+            <div class="config-section">
+                <h3>Serviços Oferecidos</h3>
+                <div id="servicesList">
+                    <!-- Lista de serviços será preenchida dinamicamente -->
+                </div>
+                <button id="addServiceBtn" class="add-service">+ Adicionar Serviço</button>
+            </div>
+            
+            <div class="config-section">
+                <h3>Horários de Funcionamento</h3>
+                <div class="form-group">
+                    <label>Dias da Semana</label>
+                    <div class="day-checkbox">
+                        <input type="checkbox" id="monday" checked>
+                        <label for="monday">Segunda-feira</label>
+                    </div>
+                    <div class="day-checkbox">
+                        <input type="checkbox" id="tuesday" checked>
+                        <label for="tuesday">Terça-feira</label>
+                    </div>
+                    <div class="day-checkbox">
+                        <input type="checkbox" id="wednesday" checked>
+                        <label for="wednesday">Quarta-feira</label>
+                    </div>
+                    <div class="day-checkbox">
+                        <input type="checkbox" id="thursday" checked>
+                        <label for="thursday">Quinta-feira</label>
+                    </div>
+                    <div class="day-checkbox">
+                        <input type="checkbox" id="friday" checked>
+                        <label for="friday">Sexta-feira</label>
+                    </div>
+                    <div class="day-checkbox">
+                        <input type="checkbox" id="saturday" checked>
+                        <label for="saturday">Sábado</label>
+                    </div>
+                    <div class="day-checkbox">
+                        <input type="checkbox" id="sunday">
+                        <label for="sunday">Domingo</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="openingTime">Horário de Abertura</label>
+                    <input type="time" id="openingTime" value="08:00">
+                </div>
+                
+                <div class="form-group">
+                    <label for="closingTime">Horário de Fechamento</label>
+                    <input type="time" id="closingTime" value="18:00">
+                </div>
+                
+                <div class="form-group">
+                    <label for="intervalTime">Intervalo entre horários (minutos)</label>
+                    <input type="number" id="intervalTime" value="60" min="15" step="15">
+                </div>
+            </div>
+            
+            <div class="config-section">
+                <h3>Datas Especiais</h3>
+                <div id="specialDatesList">
+                    <div class="special-date">
+                        <input type="date" class="special-date-input">
+                        <select class="special-date-type">
+                            <option value="open">Aberto (horário especial)</option>
+                            <option value="closed">Fechado</option>
+                        </select>
+                        <button class="remove-date-btn">×</button>
+                    </div>
+                </div>
+                <button id="addDateBtn" class="add-service">+ Adicionar Data Especial</button>
+            </div>
+            
+            <button id="saveConfigBtn" class="save-btn">Salvar Configurações</button>
+        </div>
+    </div>
+
+    <script>
+        // Dados iniciais
+        let salonData = {
+            name: "Salão da Maria",
+            services: [
+                { name: "Corte de Cabelo", price: 50 },
+                { name: "Coloração", price: 120 },
+                { name: "Manicure", price: 30 },
+                { name: "Pedicure", price: 40 },
+                { name: "Maquiagem", price: 80 }
+            ],
+            workingDays: [1, 2, 3, 4, 5, 6], // 0=Domingo, 1=Segunda, etc.
+            openingTime: "08:00",
+            closingTime: "18:00",
+            interval: 60,
+            specialDates: [],
+            appointments: []
+        };
+
+        // Elementos da visão do cliente
+        const clientView = document.getElementById('clientView');
+        const salonNameDisplay = document.getElementById('salonNameDisplay');
+        const serviceSelect = document.getElementById('service');
+        const dateInput = document.getElementById('date');
+        const timeSelect = document.getElementById('time');
+        const bookingForm = document.getElementById('bookingForm');
+        const confirmation = document.getElementById('confirmation');
+        const confirmationText = document.getElementById('confirmationText');
+
+        // Elementos da visão do salão
+        const salonView = document.getElementById('salonView');
+        const salonName = document.getElementById('salonName');
+        const configBtn = document.getElementById('configBtn');
+        const currentMonth = document.getElementById('currentMonth');
+        const prevMonthBtn = document.getElementById('prevMonth');
+        const nextMonthBtn = document.getElementById('nextMonth');
+        const calendarGrid = document.getElementById('calendarGrid');
+
+        // Elementos do painel de configuração
+        const configPanel = document.getElementById('configPanel');
+        const salonNameInput = document.getElementById('salonNameInput');
+        const servicesList = document.getElementById('servicesList');
+        const addServiceBtn = document.getElementById('addServiceBtn');
+        const saveConfigBtn = document.getElementById('saveConfigBtn');
+        const openingTime = document.getElementById('openingTime');
+        const closingTime = document.getElementById('closingTime');
+        const intervalTime = document.getElementById('intervalTime');
+        const specialDatesList = document.getElementById('specialDatesList');
+        const addDateBtn = document.getElementById('addDateBtn');
+
+        // Botões de navegação
+        const clientViewBtn = document.getElementById('clientViewBtn');
+        const salonViewBtn = document.getElementById('salonViewBtn');
+
+        // Variáveis do calendário
+        let currentDate = new Date();
+        currentDate.setDate(1); // Primeiro dia do mês
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSalonData();
+            updateServiceList();
+            generateTimeSlots();
+            updateCalendar();
+            
+            // Configurar data mínima (hoje)
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.setAttribute('min', today);
+            
+            // Carregar configurações iniciais
+            loadConfigPanel();
+        });
+
+        // Carregar dados do salão
+        function loadSalonData() {
+            salonNameDisplay.textContent = salonData.name;
+            salonName.textContent = salonData.name;
+            salonNameInput.value = salonData.name;
+        }
+
+        // Atualizar lista de serviços
+        function updateServiceList() {
+            serviceSelect.innerHTML = '<option value="" disabled selected>Selecione um serviço</option>';
+            servicesList.innerHTML = '';
+            
+            salonData.services.forEach((service, index) => {
+                // Adicionar ao select do cliente
+                const option = document.createElement('option');
+                option.value = service.name;
+                option.textContent = `${service.name} - R$ ${service.price.toFixed(2)}`;
+                serviceSelect.appendChild(option);
+                
+                // Adicionar à lista de configuração
+                const serviceItem = document.createElement('div');
+                serviceItem.className = 'service-item';
+                serviceItem.innerHTML = `
+                    <input type="text" class="service-name" value="${service.name}" placeholder="Nome do serviço">
+                    <input type="number" class="service-price" value="${service.price}" placeholder="Preço" min="0" step="0.01">
+                    <button class="remove-service-btn" data-index="${index}">×</button>
+                `;
+                servicesList.appendChild(serviceItem);
+            });
+            
+            // Adicionar eventos aos botões de remover
+            document.querySelectorAll('.remove-service-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    salonData.services.splice(index, 1);
+                    updateServiceList();
+                });
+            });
+        }
+
+        // Gerar horários disponíveis
+        function generateTimeSlots() {
+            timeSelect.innerHTML = '<option value="" disabled selected>Selecione um horário</option>';
+            
+            const start = salonData.openingTime.split(':');
+            const end = salonData.closingTime.split(':');
+            const interval = salonData.interval;
+            
+            let currentHour = parseInt(start[0]);
+            let currentMinute = parseInt(start[1]);
+            const endHour = parseInt(end[0]);
+            const endMinute = parseInt(end[1]);
+            
+            while (currentHour < endHour || (currentHour === endHour && currentMinute < endMinute)) {
+                const timeString = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
+                
+                const option = document.createElement('option');
+                option.value = timeString;
+                option.textContent = timeString;
+                timeSelect.appendChild(option);
+                
+                currentMinute += interval;
+                if (currentMinute >= 60) {
+                    currentMinute -= 60;
+                    currentHour += 1;
+                }
+            }
+        }
+
+        // Atualizar calendário
+        function updateCalendar() {
+            // Atualizar cabeçalho
+            const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
+                              "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            currentMonth.textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+            
+            // Limpar calendário
+            calendarGrid.innerHTML = '';
+            
+            // Adicionar cabeçalhos dos dias
+            const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+            dayNames.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-day-header';
+                dayHeader.textContent = day;
+                calendarGrid.appendChild(dayHeader);
+            });
+            
+            // Obter primeiro dia do mês e dia da semana
+            const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const startingDay = firstDay.getDay();
+            
+            // Obter último dia do mês
+            const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+            
+            // Criar dias do mês anterior (se necessário)
+            const prevMonthLastDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
+            for (let i = 0; i < startingDay; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day disabled';
+                dayElement.textContent = prevMonthLastDay - startingDay + i + 1;
+                calendarGrid.appendChild(dayElement);
+            }
+            
+            // Criar dias do mês atual
+            const today = new Date();
+            for (let i = 1; i <= lastDay; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                
+                // Verificar se é hoje
+                if (i === today.getDate() && currentDate.getMonth() === today.getMonth() && currentDate.getFullYear() === today.getFullYear()) {
+                    dayElement.style.border = '2px solid var(--primary)';
+                }
+                
+                // Verificar se é dia de trabalho
+                const dayOfWeek = new Date(currentDate.getFullYear(), currentDate.getMonth(), i).getDay();
+                const isWorkingDay = salonData.workingDays.includes(dayOfWeek);
+                
+                if (!isWorkingDay) {
+                    dayElement.classList.add('disabled');
+                }
+                
+                const dayNumber = document.createElement('div');
+                dayNumber.className = 'calendar-day-number';
+                dayNumber.textContent = i;
+                dayElement.appendChild(dayNumber);
+                
+                // Adicionar agendamentos
+                const dateStr = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${i.toString().padStart(2, '0')}`;
+                const dayAppointments = salonData.appointments.filter(a => a.date === dateStr);
+                
+                dayAppointments.forEach(appointment => {
+                    const apptElement = document.createElement('div');
+                    apptElement.className = 'appointment';
+                    apptElement.innerHTML = `
+                        <strong>${appointment.time}</strong><br>
+                        ${appointment.service}<br>
+                        ${appointment.clientName}
+                    `;
+                    dayElement.appendChild(apptElement);
+                });
+                
+                calendarGrid.appendChild(dayElement);
+            }
+            
+            // Criar dias do próximo mês (se necessário)
+            const totalCells = startingDay + lastDay;
+            const remainingCells = totalCells <= 35 ? 35 - totalCells : 42 - totalCells;
+            
+            for (let i = 1; i <= remainingCells; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day disabled';
+                dayElement.textContent = i;
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        // Carregar painel de configuração
+        function loadConfigPanel() {
+            // Dias da semana
+            document.getElementById('monday').checked = salonData.workingDays.includes(1);
+            document.getElementById('tuesday').checked = salonData.workingDays.includes(2);
+            document.getElementById('wednesday').checked = salonData.workingDays.includes(3);
+            document.getElementById('thursday').checked = salonData.workingDays.includes(4);
+            document.getElementById('friday').checked = salonData.workingDays.includes(5);
+            document.getElementById('saturday').checked = salonData.workingDays.includes(6);
+            document.getElementById('sunday').checked = salonData.workingDays.includes(0);
+            
+            // Horários
+            openingTime.value = salonData.openingTime;
+            closingTime.value = salonData.closingTime;
+            intervalTime.value = salonData.interval;
+            
+            // Datas especiais
+            specialDatesList.innerHTML = '';
+            salonData.specialDates.forEach((date, index) => {
+                addSpecialDateInput(date.date, date.type, index);
+            });
+        }
+
+        // Adicionar campo de data especial
+        function addSpecialDateInput(date = '', type = 'closed', index = -1) {
+            const dateElement = document.createElement('div');
+            dateElement.className = 'special-date';
+            dateElement.innerHTML = `
+                <input type="date" class="special-date-input" value="${date}">
+                <select class="special-date-type">
+                    <option value="open" ${type === 'open' ? 'selected' : ''}>Aberto (horário especial)</option>
+                    <option value="closed" ${type === 'closed' ? 'selected' : ''}>Fechado</option>
+                </select>
+                <button class="remove-date-btn">×</button>
+            `;
+            
+            if (index === -1) {
+                specialDatesList.appendChild(dateElement);
+            } else {
+                specialDatesList.insertBefore(dateElement, specialDatesList.children[index]);
+            }
+            
+            // Adicionar evento ao botão de remover
+            dateElement.querySelector('.remove-date-btn').addEventListener('click', function() {
+                dateElement.remove();
+            });
+        }
+
+        // Salvar configurações
+        function saveConfig() {
+            // Nome do salão
+            salonData.name = salonNameInput.value;
+            
+            // Serviços
+            salonData.services = [];
+            document.querySelectorAll('.service-item').forEach(item => {
+                const name = item.querySelector('.service-name').value;
+                const price = parseFloat(item.querySelector('.service-price').value);
+                if (name && !isNaN(price)) {
+                    salonData.services.push({ name, price });
+                }
+            });
+            
+            // Dias de trabalho
+            salonData.workingDays = [];
+            if (document.getElementById('monday').checked) salonData.workingDays.push(1);
+            if (document.getElementById('tuesday').checked) salonData.workingDays.push(2);
+            if (document.getElementById('wednesday').checked) salonData.workingDays.push(3);
+            if (document.getElementById('thursday').checked) salonData.workingDays.push(4);
+            if (document.getElementById('friday').checked) salonData.workingDays.push(5);
+            if (document.getElementById('saturday').checked) salonData.workingDays.push(6);
+            if (document.getElementById('sunday').checked) salonData.workingDays.push(0);
+            
+            // Horários
+            salonData.openingTime = openingTime.value;
+            salonData.closingTime = closingTime.value;
+            salonData.interval = parseInt(intervalTime.value);
+            
+            // Datas especiais
+            salonData.specialDates = [];
+            document.querySelectorAll('.special-date').forEach(date => {
+                const dateValue = date.querySelector('.special-date-input').value;
+                const typeValue = date.querySelector('.special-date-type').value;
+                if (dateValue) {
+                    salonData.specialDates.push({ date: dateValue, type: typeValue });
+                }
+            });
+            
+            // Atualizar visualizações
+            loadSalonData();
+            updateServiceList();
+            generateTimeSlots();
+            updateCalendar();
+            
+            // Fechar painel de configuração
+            toggleConfigPanel();
+        }
+
+        // Alternar painel de configuração
+        function toggleConfigPanel() {
+            if (configPanel.style.display === 'block') {
+                configPanel.style.display = 'none';
+                salonView.style.display = 'block';
+            } else {
+                configPanel.style.display = 'block';
+                salonView.style.display = 'none';
+                loadConfigPanel();
+            }
+        }
+
+        // Alternar entre visões
+        function toggleView(view) {
+            if (view === 'client') {
+                clientView.style.display = 'block';
+                salonView.style.display = 'none';
+                configPanel.style.display = 'none';
+                clientViewBtn.classList.add('active');
+                salonViewBtn.classList.remove('active');
+            } else {
+                clientView.style.display = 'none';
+                salonView.style.display = 'block';
+                configPanel.style.display = 'none';
+                clientViewBtn.classList.remove('active');
+                salonViewBtn.classList.add('active');
+            }
+        }
+
+        // Event Listeners
+        bookingForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Coletar dados do formulário
+            const service = serviceSelect.value;
+            const date = dateInput.value;
+            const time = timeSelect.value;
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            
+            // Adicionar ao histórico de agendamentos
+            salonData.appointments.push({
+                date,
+                time,
+                service,
+                clientName: name,
+                clientEmail: email,
+                clientPhone: phone
+            });
+            
+            // Formatando a data para exibição
+            const dateObj = new Date(date);
+            const formattedDate = dateObj.toLocaleDateString('pt-BR', { 
+                weekday: 'long', 
+                day: 'numeric', 
+                month: 'long' 
+            });
+            
+            // Atualizar texto de confirmação
+            confirmationText.innerHTML = `
+                Olá <strong>${name}</strong>, seu agendamento para <strong>${service}</strong> 
+                foi confirmado para <strong>${formattedDate}</strong> às <strong>${time}</strong>.
+                <br><br>
+                Enviamos os detalhes para o seu e-mail.
+            `;
+            
+            // Mostrar confirmação e esconder formulário
+            bookingForm.style.display = 'none';
+            confirmation.style.display = 'block';
+            
+            // Rolagem suave para a confirmação
+            confirmation.scrollIntoView({ behavior: 'smooth' });
+            
+            // Atualizar calendário na visão do salão
+            updateCalendar();
+        });
+
+        // Navegação do calendário
+        prevMonthBtn.addEventListener('click', function() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            updateCalendar();
+        });
+        
+        nextMonthBtn.addEventListener('click', function() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            updateCalendar();
+        });
+
+        // Botões de visão
+        clientViewBtn.addEventListener('click', function() {
+            toggleView('client');
+        });
+        
+        salonViewBtn.addEventListener('click', function() {
+            toggleView('salon');
+        });
+
+        // Configurações
+        configBtn.addEventListener('click', toggleConfigPanel);
+        
+        addServiceBtn.addEventListener('click', function() {
+            const serviceItem = document.createElement('div');
+            serviceItem.className = 'service-item';
+            serviceItem.innerHTML = `
+                <input type="text" class="service-name" placeholder="Nome do serviço">
+                <input type="number" class="service-price" placeholder="Preço" min="0" step="0.01">
+                <button class="remove-service-btn">×</button>
+            `;
+            servicesList.appendChild(serviceItem);
+            
+            // Adicionar evento ao botão de remover
+            serviceItem.querySelector('.remove-service-btn').addEventListener('click', function() {
+                serviceItem.remove();
+            });
+        });
+        
+        addDateBtn.addEventListener('click', function() {
+            addSpecialDateInput();
+        });
+        
+        saveConfigBtn.addEventListener('click', saveConfig);
+    </script>
+</body>
+</html>

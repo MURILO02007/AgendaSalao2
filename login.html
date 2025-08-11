@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeautyBook - Login</title>
+    <!-- Inclua a biblioteca do Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary: #b023df;
+            --secondary: #6a5acd;
+            --dark: #333;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            color: var(--dark);
+            line-height: 1.6;
+            background: linear-gradient(135deg, #aa35ea, #700c91);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            flex: 1;
+        }
+        
+        /* Header */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #aa35ea, #700c91);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .logoimg {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 12px;
+        }
+        
+        /* Formulário de Login */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 0;
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .login-card h2 {
+            color: var(--primary);
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        .form-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            margin-top: 10px;
+        }
+        
+        .btn-primary:hover {
+            background-color: #9a1fc7;
+            transform: translateY(-2px);
+        }
+        
+        .login-options {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .login-options a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .login-options a:hover {
+            text-decoration: underline;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: var(--gray);
+        }
+        
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .divider span {
+            padding: 0 10px;
+        }
+        
+        .social-login {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .btn-social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: white;
+            color: var(--dark);
+            border: 1px solid #ddd;
+        }
+        
+        .btn-social:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Footer */
+        footer {
+            background: rgba(0,0,0,0.2);
+            padding: 20px 0;
+            text-align: center;
+            color: white;
+            margin-top: auto;
+        }
+        
+        .copyright {
+            font-size: 0.9rem;
+        }
+
+        /* Mensagem de erro */
+        .error-message {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .login-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo-container">
+            <a href="index.html" class="logo-link">
+                <img class="logoimg" src="IMG/logoAgenTy.png" alt="BeautyBook Logo">
+                <div class="logo">BeautyBook</div>
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html#features">Recursos</a>
+            <a href="index.html#pricing">Planos</a>
+        </div>
+    </nav>
+    
+    <main class="container">
+        <div class="login-container">
+            <div class="login-card">
+                <h2>Login</h2>
+                
+                <!-- Mensagem de erro -->
+                <div id="error-message" class="error-message"></div>
+                
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Senha</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Entrar</button>
+                </form>
+                
+                <div class="login-options">
+                    <a href="forgot-password.html">Esqueceu sua senha?</a>
+                </div>
+                
+                <div class="divider">
+                    <span>ou</span>
+                </div>
+                
+                <div class="social-login">
+                    <button class="btn btn-social" id="google-login">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="20" alt="Google">
+                        Entrar com Google
+                    </button>
+                    <button class="btn btn-social" id="facebook-login">
+                        <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" width="20" alt="Facebook">
+                        Entrar com Facebook
+                    </button>
+                </div>
+                
+                <div class="login-options" style="margin-top: 30px;">
+                    Não tem uma conta? <a href="signup.html">Registre-se</a>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p class="copyright">© 2023 BeautyBook. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Configuração do Supabase
+        const supabaseUrl = 'https://vcgmnancosgbpmfvkkjc.supabase.co'; // Substitua pela sua URL do Supabase
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjZ21uYW5jb3NnYnBtZnZra2pjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNTAyNjUsImV4cCI6MjA2OTkyNjI2NX0.PoTIyfubFocRtEuLgPGV1MaXT8zW6wRUAJZf7qpYmnA'; // Substitua pela sua chave do Supabase
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Verificar se o usuário já está logado
+        async function checkUser() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                window.location.href = 'agendamento.html';
+            }
+        }
+
+        // Chamar a função ao carregar a página
+        checkUser();
+
+        // Login com email e senha
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('error-message');
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password
+                });
+                
+                if (error) {
+                    errorElement.textContent = error.message;
+                    errorElement.style.display = 'block';
+                    return;
+                }
+                
+                // Verificar se o usuário tem assinatura ativa
+                const { data: subscriptionData, error: subscriptionError } = await supabase
+                    .from('assinaturas') // Substitua pelo nome da sua tabela de assinaturas
+                    .select('*')
+                    .eq('user_id', data.user.id)
+                    .eq('status', 'active') // Assumindo que há um campo 'status'
+                    .single();
+                
+                if (subscriptionError || !subscriptionData) {
+                    errorElement.textContent = 'Você precisa ter uma assinatura ativa para acessar esta área.';
+                    errorElement.style.display = 'block';
+                    
+                    // Deslogar o usuário se não tiver assinatura
+                    await supabase.auth.signOut();
+                    return;
+                }
+                
+                // Redirecionar para a página de agendamento
+                window.location.href = 'agendamento.html';
+                
+            } catch (err) {
+                errorElement.textContent = 'Ocorreu um erro ao fazer login. Por favor, tente novamente.';
+                errorElement.style.display = 'block';
+                console.error('Login error:', err);
+            }
+        });
+
+        // Login com Google
+        document.getElementById('google-login').addEventListener('click', async () => {
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.origin + '/agendamento.html'
+                }
+            });
+            
+            if (error) {
+                document.getElementById('error-message').textContent = error.message;
+                document.getElementById('error-message').style.display = 'block';
+            }
+        });
+
+        // Login com Facebook
+        document.getElementById('facebook-login').addEventListener('click', async () => {
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'facebook',
+                options: {
+                    redirectTo: window.location.origin + '/agendamento.html'
+                }
+            });
+            
+            if (error) {
+                document.getElementById('error-message').textContent = error.message;
+                document.getElementById('error-message').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

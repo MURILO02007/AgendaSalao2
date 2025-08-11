@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeautyBook - Agendamento Online para Salões</title>
+    <link rel="icon" href="IMG/logoAgenTy.png" type="image/png" />
+    <style>
+        :root {
+            --primary: #b023df;
+            --secondary: #6a5acd;
+            --dark: #333;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            color: var(--dark);
+            line-height: 1.6;
+            background: linear-gradient(135deg, #aa35ea, #700c91);
+            padding-top: 80px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Fixo */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: transparent;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        nav.scrolled {
+            background: linear-gradient(135deg, #aa35ea, #700c91);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .logoimg {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+        }
+        
+        .nav-links a:hover {
+            color: rgba(255, 255, 255, 0.8);
+            transform: translateY(-2px);
+        }
+        
+        /* Hero Section */
+        header {
+            color: white;
+            padding: 120px 0 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://i.pinimg.com/1200x/98/bd/65/98bd65ad9571e1c6ecf778aff49b153b.jpg') center/cover no-repeat;
+            filter: blur(6px) brightness(0.4);
+            z-index: -1;
+        }
+        
+        header .container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        
+
+        .login-login {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 30px;
+            padding: 8px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: white;
+            color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .btn-outline {
+            border: 2px solid white;
+            color: white;
+        }
+        
+        .btn-outline:hover {
+            background-color: white;
+            color: var(--primary);
+        }
+        
+        .btn-secondary {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .highlight {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        /* Seções com animação */
+        .section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            text-align: center;
+            color: white;
+        }
+        
+        .features h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .features p {
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 700px;
+            margin: 0 auto 50px;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .feature-card h3 {
+            margin: 20px 0 15px;
+            font-size: 1.3rem;
+            color: white;
+        }
+        
+        .feature-card p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0;
+        }
+        
+        /* Pricing Section */
+        .pricing {
+            padding: 80px 0;
+            text-align: center;
+            color: white;
+        }
+        
+        .pricing h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .pricing p {
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 700px;
+            margin: 0 auto 50px;
+        }
+        
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .price-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        
+        .price-card.popular {
+            border: 2px solid #ffcc00;
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.3);
+        }
+        
+        .popular-tag {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background-color: #ffcc00;
+            color: #333;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        .price-card:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .price-card h3 {
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: white;
+            margin: 20px 0;
+        }
+        
+        .price span {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .price-features {
+            text-align: left;
+            margin: 30px 0;
+        }
+        
+        .price-features li {
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.8);
+            list-style-type: none;
+            position: relative;
+            padding-left: 25px;
+        }
+        
+        .price-features li:before {
+            content: "✓";
+            color: #4CAF50;
+            position: absolute;
+            left: 0;
+        }
+        
+        /* Footer */
+        footer {
+            padding: 50px 0 20px;
+            text-align: center;
+            color: white;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        .footer-links a:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .copyright {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+        }
+
+        /* Scroll suave */
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                padding: 15px;
+            }
+            
+            .logo-container {
+                margin-bottom: 15px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+            
+            header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .price-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav id="mainNav">
+        <div class="logo-container">
+            <a href="#home" class="logo-link">
+                <img class="logoimg" src="IMG/logoAgenTy.png" alt="BeautyBook Logo">
+                <div class="logo">BeautyBook</div>
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="tutorial.html">Como funciona</a>
+            <a href="#features">Recursos</a>
+            <a href="#pricing">Planos</a>
+            <a href="#contact">Contato</a>
+            <a href="login.html" class="login-login">Login</a>
+        </div>
+    </nav>
+    
+    <header id="home">
+        <div class="container">
+            <h1>Transforme seu Salão de Beleza</h1>
+            <p>Gerencie agendamentos, clientes e serviços de forma simples e profissional. Aumente sua produtividade e satisfação dos clientes.</p>
+            
+            <div class="cta-buttons">
+                <a href="#pricing" class="btn btn-primary">Assinar Planos</a>
+                <a href="demo.html" class="btn btn-outline">Ver Demonstração</a>
+                <a href="#features" class="btn btn-secondary">Recursos</a>
+                <a href="buscar-saloes.html" class="btn btn-secondary">Encontrar Salões Próximos</a>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="highlight">500+</span>
+                    <span>salões contam conosco</span>
+                </div>
+                <div class="stat-item">
+                    <span class="highlight">4.9/5</span>
+                    <span>avaliação média</span>
+                </div>
+                <div class="stat-item">
+                    <span class="highlight">+150%</span>
+                    <span>mais agendamentos</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <section id="features" class="features section">
+        <div class="container">
+            <h2>Recursos que fazem a diferença</h2>
+            <p>Tudo que você precisa para gerenciar seu salão de forma profissional e eficiente</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>Agendamento Online</h3>
+                    <p>Seus clientes podem agendar 24/7 através de um link personalizado</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>Gestão de Horários</h3>
+                    <p>Controle total sobre disponibilidade, bloqueios e horários especiais</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>Base de Clientes</h3>
+                    <p>Histórico completo, preferências e dados de contato organizados</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>Lembretes Automáticos</h3>
+                    <p>WhatsApp e SMS automáticos para reduzir faltas</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>Avaliações</h3>
+                    <p>Colete feedback dos clientes e melhore seus serviços</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>Relatórios</h3>
+                    <p>Análises detalhadas de faturamento, clientes e serviços</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="pricing" class="pricing section">
+        <div class="container">
+            <h2>Planos Acessíveis</h2>
+            <p>Escolha o plano perfeito para o tamanho do seu negócio</p>
+            
+            <div class="price-grid">
+                <div class="price-card">
+                    <h3>Plano Básico</h3>
+                    <div class="price">R$85,00 <span>/mês</span></div>
+                    <ul class="price-features">
+                        <li>Até 60 agendamentos/mês</li>
+                        <li>2 profissionais</li>
+                        <li>Agendamento online</li>
+                        <li>Gestão de clientes</li>
+                        <li>Lembretes por WhatsApp</li>
+                        <li>Suporte por e-mail</li>
+                    </ul>
+                    <a href="finplano.html?plano=basico&valor=85" class="btn btn-outline">Assinar Agora</a>
+                </div>
+                
+                <div class="price-card popular">
+    <span class="popular-tag">MAIS VENDIDO</span>
+    <h3>Plano Pro</h3>
+    <div class="price">R$135,00 <span>/mês</span></div>
+    <ul class="price-features">
+        <li>Agendamentos ilimitados</li>
+        <li>Profissionais ilimitados</li>
+        <li>Todos os recursos básicos</li>
+        <li>Relatórios avançados</li>
+        <li>Lembretes por WhatsApp e SMS</li>
+        <li>Integração com redes sociais</li>
+        <li>Suporte prioritário 24/7</li>
+    </ul>
+    <a href="finplano.html?plano=pro&valor=135" class="btn btn-primary">Assinar Agora</a>
+</div>
+            </div>
+        </div>
+    </section>
+    
+    <footer class="section">
+        <div class="container">
+            <div class="footer-links">
+                <a href="#">Termos de Serviço</a>
+                <a href="#">Política de Privacidade</a>
+                <a href="#contact">Contato</a>
+            </div>
+            <p class="copyright">© 2023 BeautyBook. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Controle do header
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('mainNav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Animação de scroll para seções
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section');
+            
+            function checkSections() {
+                const triggerBottom = window.innerHeight / 5 * 4;
+                
+                sections.forEach(section => {
+                    const sectionTop = section.getBoundingClientRect().top;
+                    
+                    if (sectionTop < triggerBottom) {
+                        section.classList.add('visible');
+                    }
+                });
+            }
+            
+            // Verifica ao carregar
+            checkSections();
+            
+            // Verifica ao rolar
+            window.addEventListener('scroll', checkSections);
+
+            // Scroll suave personalizado para todas as âncoras
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    // Ignora links vazios
+                    if (this.getAttribute('href') === '#') return;
+                    
+                    // Verifica se é um link externo
+                    if (this.href && this.href.indexOf('#') === -1) return;
+                    
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        // Calcula a posição considerando o header fixo
+                        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - 80;
+                        
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
